@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Currency Input Page</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+        }
+
+        label {
+            width: 90%;
+            max-width: 400px;
+            margin: 5px 0;
+            font-size: 1.2em;
+        }
+
+        input[type="text"] {
+            width: 90%;
+            max-width: 400px;
+            padding: 15px;
+            margin: 10px 0;
+            font-size: 1.2em;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        input[disabled] {
+            background-color: #e0e0e0;
+        }
+
+        button {
+            width: 90%;
+            max-width: 400px;
+            padding: 15px;
+            margin-top: 20px;
+            font-size: 1.2em;
+            color: white;
+            background-color: red;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        @media (min-width: 600px) {
+            label {
+                font-size: 1.5em;
+            }
+
+            input[type="text"], button {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <label for="price">Preço por litro</label>
+    <input type="text" id="price" placeholder="Digite o preço" pattern="\d*(\.\d{0,2})?">
+
+    <label for="value">Valor</label>
+    <input type="text" id="value" placeholder="Digite o valor" pattern="\d*(\.\d{0,2})?">
+
+    <label for="result">Resultado</label>
+    <input type="text" id="result" placeholder="Resultado" disabled>
+
+    <button type="button" id="calculateButton">Calcular</button>
+
+    <script>
+        document.getElementById('calculateButton').addEventListener('click', function() {
+            const price = parseFloat(document.getElementById('price').value);
+            const value = parseFloat(document.getElementById('value').value);
+            const resultField = document.getElementById('result');
+
+            if (!isNaN(price) && price !== 0 && !isNaN(value)) {
+                const result = value / price * 9.5;
+                resultField.value = result.toFixed(2);
+            } else {
+                resultField.value = 'Erro';
+            }
+        });
+    </script>
+</body>
+</html>
