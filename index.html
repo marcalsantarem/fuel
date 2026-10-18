@@ -559,11 +559,11 @@
             <div class="row">
                 <div class="field">
                     <label for="factorCity">Cidade (km/L)</label>
-                    <input type="text" id="factorCity" data-key="fuel_factor_city" inputmode="decimal" placeholder="9,5">
+                    <input type="text" id="factorCity" data-key="fuel_factor_city" inputmode="decimal" placeholder="12,3">
                 </div>
                 <div class="field">
                     <label for="factorRoad">Estrada (km/L)</label>
-                    <input type="text" id="factorRoad" data-key="fuel_factor_road" inputmode="decimal" placeholder="13">
+                    <input type="text" id="factorRoad" data-key="fuel_factor_road" inputmode="decimal" placeholder="15">
                 </div>
             </div>
             <button type="button" class="secondary" id="resetFactors">Restaurar padrão</button>
@@ -580,7 +580,8 @@
     <div class="toast" id="toast" role="status"></div>
 
     <script>
-        const DEFAULT_FACTORS = { city: 9.5, road: 13 };
+        // Palio Economy Fire 1.0 (gasolina), conforme ficha técnica do modelo 2010.
+        const DEFAULT_FACTORS = { city: 12.3, road: 15 };
         const DEFAULT_ETHANOL_THRESHOLD = 70;
         const HISTORY_KEY = 'fuel_history';
         const MODE_KEY = 'fuel_mode';
