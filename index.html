@@ -1,93 +1,1033 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mobile Currency Input Page</title>
+    <meta name="theme-color" content="#0f172a">
+    <title>Calculadora de Abastecimento</title>
     <style>
+        :root {
+            --bg-start: #0f172a;
+            --bg-end: #1e293b;
+            --card-bg: rgba(255, 255, 255, 0.97);
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --border: #dbe3ef;
+            --field-bg: #ffffff;
+            --accent: #2563eb;
+            --accent-hover: #1d4ed8;
+            --accent-soft: #dbeafe;
+            --result-bg: #f1f5f9;
+            --good: #15803d;
+            --good-soft: #dcfce7;
+            --warn: #b45309;
+            --warn-soft: #fef3c7;
+            --error: #b91c1c;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-start: #020617;
+                --bg-end: #0f172a;
+                --card-bg: rgba(30, 41, 59, 0.97);
+                --text-primary: #f1f5f9;
+                --text-secondary: #94a3b8;
+                --border: #334155;
+                --field-bg: #0f172a;
+                --accent: #3b82f6;
+                --accent-hover: #60a5fa;
+                --accent-soft: rgba(59, 130, 246, 0.25);
+                --result-bg: #0b1222;
+                --good: #4ade80;
+                --good-soft: rgba(74, 222, 128, 0.15);
+                --warn: #fbbf24;
+                --warn-soft: rgba(251, 191, 36, 0.15);
+                --error: #f87171;
+            }
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        [hidden] {
+            display: none !important;
+        }
+
         body {
             display: flex;
             justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            height: 100vh;
+            align-items: flex-start;
+            min-height: 100vh;
             margin: 0;
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
+            padding: 24px 16px;
+            font-family: "Inter", "Segoe UI", Arial, sans-serif;
+            background: linear-gradient(135deg, var(--bg-start), var(--bg-end));
+            background-attachment: fixed;
+            color: var(--text-primary);
+        }
+
+        .card {
+            width: 100%;
+            max-width: 460px;
+            padding: 26px 22px;
+            border-radius: 18px;
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 20px 45px rgba(2, 6, 23, 0.45);
+        }
+
+        h1 {
+            margin: 0 0 6px;
+            font-size: 1.45rem;
+            letter-spacing: -0.02em;
+        }
+
+        h2 {
+            margin: 0 0 10px;
+            font-size: 1rem;
+        }
+
+        .subtitle {
+            margin: 0 0 18px;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .tabs {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            padding: 9px 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            background: var(--result-bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+        }
+
+        .tabs .tab {
+            box-shadow: none;
+        }
+
+        .tabs .tab:hover {
+            color: var(--text-primary);
+            background: var(--result-bg);
+            border-color: var(--accent);
+            transform: none;
+        }
+
+        .tabs .tab[aria-selected="true"]:hover {
+            color: #ffffff;
+            background: var(--accent);
+        }
+
+        .tab[aria-selected="true"] {
+            color: #ffffff;
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .mode[hidden] {
+            display: none;
+        }
+
+        .mode-hint {
+            margin: 0 0 16px;
+            color: var(--text-secondary);
+            font-size: 0.88rem;
+        }
+
+        .field {
+            margin-bottom: 14px;
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
         }
 
         label {
-            width: 90%;
-            max-width: 400px;
-            margin: 5px 0;
-            font-size: 1.2em;
+            display: block;
+            margin-bottom: 7px;
+            font-size: 0.92rem;
+            font-weight: 600;
         }
 
-        input[type="text"] {
-            width: 90%;
-            max-width: 400px;
-            padding: 15px;
-            margin: 10px 0;
-            font-size: 1.2em;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        .check {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            cursor: pointer;
         }
 
-        input[disabled] {
-            background-color: #e0e0e0;
+        .check input {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--accent);
+        }
+
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            font-size: 1rem;
+            color: var(--text-primary);
+            background: var(--field-bg);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        input[type="text"]:focus,
+        select:focus,
+        .tab:focus-visible,
+        button:focus-visible {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px var(--accent-soft);
+        }
+
+        input[type="text"].invalid {
+            border-color: var(--error);
+        }
+
+        input[type="range"] {
+            width: 100%;
+            accent-color: var(--accent);
+        }
+
+        .result {
+            margin: 6px 0 14px;
+            padding: 14px 16px;
+            border-radius: 12px;
+            background: var(--result-bg);
+            border: 1px solid var(--border);
+            min-height: 56px;
+        }
+
+        .result.empty {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .result.error {
+            color: var(--error);
+            font-size: 0.9rem;
+        }
+
+        .result-line {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 12px;
+            padding: 3px 0;
+            font-size: 0.95rem;
+        }
+
+        .result-line span:first-child {
+            color: var(--text-secondary);
+        }
+
+        .result-line strong {
+            font-variant-numeric: tabular-nums;
+        }
+
+        .result-line.main strong {
+            font-size: 1.35rem;
+            color: var(--accent);
+        }
+
+        .verdict {
+            margin-bottom: 8px;
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .verdict.good {
+            color: var(--good);
+            background: var(--good-soft);
+        }
+
+        .verdict.warn {
+            color: var(--warn);
+            background: var(--warn-soft);
         }
 
         button {
-            width: 90%;
-            max-width: 400px;
-            padding: 15px;
-            margin-top: 20px;
-            font-size: 1.2em;
-            color: white;
-            background-color: red;
-            border: none;
-            border-radius: 5px;
+            width: 100%;
+            padding: 13px 16px;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #ffffff;
+            background: var(--accent);
+            border: 1px solid transparent;
+            border-radius: 12px;
             cursor: pointer;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
         }
 
-        @media (min-width: 600px) {
-            label {
-                font-size: 1.5em;
+        button:hover {
+            background: var(--accent-hover);
+            transform: translateY(-1px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        button.secondary {
+            color: var(--text-primary);
+            background: var(--result-bg);
+            border-color: var(--border);
+            box-shadow: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            padding: 10px 12px;
+        }
+
+        button.secondary:hover {
+            border-color: var(--accent);
+        }
+
+        .button-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+
+        details {
+            margin-top: 22px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+        }
+
+        summary {
+            font-weight: 700;
+            cursor: pointer;
+            margin-bottom: 12px;
+        }
+
+        .history {
+            list-style: none;
+            margin: 0 0 12px;
+            padding: 0;
+            max-height: 260px;
+            overflow-y: auto;
+        }
+
+        .history li {
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.88rem;
+        }
+
+        .history li:last-child {
+            border-bottom: none;
+        }
+
+        .history .meta {
+            display: block;
+            color: var(--text-secondary);
+            font-size: 0.78rem;
+            margin-bottom: 2px;
+        }
+
+        .muted {
+            color: var(--text-secondary);
+            font-size: 0.88rem;
+        }
+
+        .toast {
+            position: fixed;
+            left: 50%;
+            bottom: 24px;
+            transform: translateX(-50%) translateY(20px);
+            padding: 10px 18px;
+            border-radius: 999px;
+            background: #0f172a;
+            color: #ffffff;
+            font-size: 0.9rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease, transform 0.25s ease;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        @media (max-width: 380px) {
+            .card {
+                padding: 22px 16px;
             }
 
-            input[type="text"], button {
-                font-size: 1.5em;
+            .row {
+                grid-template-columns: 1fr;
+                gap: 0;
             }
         }
     </style>
 </head>
 <body>
-    <label for="price">Preço por litro</label>
-    <input type="text" id="price" placeholder="Digite o preço" pattern="\d*(\.\d{0,2})?">
+    <main class="card">
+        <h1>Calculadora de Abastecimento</h1>
+        <p class="subtitle">Calcule autonomia, custo de viagem e qual combustível compensa.</p>
 
-    <label for="value">Valor</label>
-    <input type="text" id="value" placeholder="Digite o valor" pattern="\d*(\.\d{0,2})?">
+        <div class="tabs" role="tablist" aria-label="Modos de cálculo">
+            <button class="tab" role="tab" data-mode="range" aria-selected="true">Autonomia</button>
+            <button class="tab" role="tab" data-mode="trip" aria-selected="false">Viagem</button>
+            <button class="tab" role="tab" data-mode="tank" aria-selected="false">Encher tanque</button>
+            <button class="tab" role="tab" data-mode="compare" aria-selected="false">Álcool x Gasolina</button>
+            <button class="tab" role="tab" data-mode="efficiency" aria-selected="false">Consumo real</button>
+            <button class="tab" role="tab" data-mode="budget" aria-selected="false">Quanto pôr</button>
+        </div>
 
-    <label for="result">Resultado</label>
-    <input type="text" id="result" placeholder="Resultado" disabled>
+        <!-- Autonomia: quanto rodo com o valor abastecido -->
+        <section class="mode" data-mode="range" role="tabpanel">
+            <p class="mode-hint">Quantos quilômetros você roda com o valor abastecido.</p>
+            <div class="row">
+                <div class="field">
+                    <label for="rangePrice">Preço por litro (R$)</label>
+                    <input type="text" id="rangePrice" data-key="fuel_price" inputmode="decimal" placeholder="Ex.: 5,89">
+                </div>
+                <div class="field">
+                    <label for="rangeValue">Valor abastecido (R$)</label>
+                    <input type="text" id="rangeValue" data-key="fuel_value" inputmode="decimal" placeholder="Ex.: 100">
+                </div>
+            </div>
+            <div class="field">
+                <label for="rangeUsage">Uso</label>
+                <select id="rangeUsage" data-key="fuel_usage_type" class="usage-select"></select>
+            </div>
+        </section>
 
-    <button type="button" id="calculateButton">Calcular</button>
+        <!-- Viagem: custo para percorrer uma distância -->
+        <section class="mode" data-mode="trip" role="tabpanel" hidden>
+            <p class="mode-hint">Quanto custa percorrer uma distância e quanto fica para cada pessoa.</p>
+            <div class="row">
+                <div class="field">
+                    <label for="tripDistance">Distância (km)</label>
+                    <input type="text" id="tripDistance" data-key="fuel_trip_distance" inputmode="decimal" placeholder="Ex.: 430">
+                </div>
+                <div class="field">
+                    <label for="tripPrice">Preço por litro (R$)</label>
+                    <input type="text" id="tripPrice" data-key="fuel_price" inputmode="decimal" placeholder="Ex.: 5,89">
+                </div>
+            </div>
+            <div class="row">
+                <div class="field">
+                    <label for="tripUsage">Uso</label>
+                    <select id="tripUsage" data-key="fuel_trip_usage" class="usage-select"></select>
+                </div>
+                <div class="field">
+                    <label for="tripPeople">Dividir entre</label>
+                    <input type="text" id="tripPeople" data-key="fuel_trip_people" inputmode="numeric" placeholder="1 pessoa">
+                </div>
+            </div>
+            <div class="row">
+                <div class="field" style="align-self: end; padding-bottom: 12px;">
+                    <label class="check"><input type="checkbox" id="tripRoundTrip" data-key="fuel_trip_round"> Ida e volta</label>
+                </div>
+                <div class="field">
+                    <label for="tripTolls">Pedágios por trecho (R$)</label>
+                    <input type="text" id="tripTolls" data-key="fuel_trip_tolls" inputmode="decimal" placeholder="Opcional">
+                </div>
+            </div>
+        </section>
+
+        <!-- Encher tanque -->
+        <section class="mode" data-mode="tank" role="tabpanel" hidden>
+            <p class="mode-hint">Quanto custa completar o tanque a partir do nível atual.</p>
+            <div class="row">
+                <div class="field">
+                    <label for="tankCapacity">Capacidade (L)</label>
+                    <input type="text" id="tankCapacity" data-key="fuel_tank_capacity" inputmode="decimal" placeholder="Ex.: 50">
+                </div>
+                <div class="field">
+                    <label for="tankPrice">Preço por litro (R$)</label>
+                    <input type="text" id="tankPrice" data-key="fuel_price" inputmode="decimal" placeholder="Ex.: 5,89">
+                </div>
+            </div>
+            <div class="field">
+                <label for="tankLevel">Nível atual: <span id="tankLevelLabel">25%</span></label>
+                <input type="range" id="tankLevel" data-key="fuel_tank_level" min="0" max="100" step="5" value="25">
+            </div>
+            <div class="field">
+                <label for="tankUsage">Uso</label>
+                <select id="tankUsage" data-key="fuel_usage_type" class="usage-select"></select>
+            </div>
+        </section>
+
+        <!-- Álcool x Gasolina -->
+        <section class="mode" data-mode="compare" role="tabpanel" hidden>
+            <p class="mode-hint">Descubra qual combustível compensa mais no seu carro.</p>
+            <div class="row">
+                <div class="field">
+                    <label for="compareEthanol">Etanol (R$/L)</label>
+                    <input type="text" id="compareEthanol" data-key="fuel_compare_ethanol" inputmode="decimal" placeholder="Ex.: 3,99">
+                </div>
+                <div class="field">
+                    <label for="compareGasoline">Gasolina (R$/L)</label>
+                    <input type="text" id="compareGasoline" data-key="fuel_compare_gasoline" inputmode="decimal" placeholder="Ex.: 5,89">
+                </div>
+            </div>
+            <div class="field">
+                <label for="compareThreshold">Rendimento do etanol vs. gasolina (%)</label>
+                <input type="text" id="compareThreshold" data-key="fuel_compare_threshold" inputmode="decimal" placeholder="70 (padrão)">
+            </div>
+        </section>
+
+        <!-- Consumo real -->
+        <section class="mode" data-mode="efficiency" role="tabpanel" hidden>
+            <p class="mode-hint">Faça tanque cheio, anote o hodômetro e, no próximo tanque cheio, informe os km rodados e os litros colocados.</p>
+            <div class="row">
+                <div class="field">
+                    <label for="effDistance">Km rodados</label>
+                    <input type="text" id="effDistance" data-key="fuel_eff_distance" inputmode="decimal" placeholder="Ex.: 412">
+                </div>
+                <div class="field">
+                    <label for="effLiters">Litros abastecidos</label>
+                    <input type="text" id="effLiters" data-key="fuel_eff_liters" inputmode="decimal" placeholder="Ex.: 38,5">
+                </div>
+            </div>
+            <div class="field">
+                <label for="effPrice">Preço por litro (R$, opcional)</label>
+                <input type="text" id="effPrice" data-key="fuel_price" inputmode="decimal" placeholder="Para calcular o custo por km">
+            </div>
+        </section>
+
+        <!-- Quanto pôr: valor necessário para rodar X km -->
+        <section class="mode" data-mode="budget" role="tabpanel" hidden>
+            <p class="mode-hint">Quanto abastecer para rodar uma distância, já descontando o que há no tanque.</p>
+            <div class="row">
+                <div class="field">
+                    <label for="budgetDistance">Quero rodar (km)</label>
+                    <input type="text" id="budgetDistance" data-key="fuel_budget_distance" inputmode="decimal" placeholder="Ex.: 250">
+                </div>
+                <div class="field">
+                    <label for="budgetPrice">Preço por litro (R$)</label>
+                    <input type="text" id="budgetPrice" data-key="fuel_price" inputmode="decimal" placeholder="Ex.: 5,89">
+                </div>
+            </div>
+            <div class="row">
+                <div class="field">
+                    <label for="budgetUsage">Uso</label>
+                    <select id="budgetUsage" data-key="fuel_usage_type" class="usage-select"></select>
+                </div>
+                <div class="field">
+                    <label for="budgetCurrent">Já tenho (L)</label>
+                    <input type="text" id="budgetCurrent" data-key="fuel_budget_current" inputmode="decimal" placeholder="0">
+                </div>
+            </div>
+        </section>
+
+        <div id="result" class="result empty" aria-live="polite">Preencha os campos para ver o resultado.</div>
+        <div id="extraActions" class="button-row" hidden>
+            <button type="button" class="secondary" data-apply="city">Usar como consumo na cidade</button>
+            <button type="button" class="secondary" data-apply="road">Usar como consumo na estrada</button>
+        </div>
+
+        <div class="button-row">
+            <button type="button" id="saveButton" disabled>Salvar no histórico</button>
+            <button type="button" id="copyButton" class="secondary" disabled>Copiar resultado</button>
+        </div>
+
+        <details id="settings">
+            <summary>Consumo do veículo</summary>
+            <p class="muted" style="margin: 0 0 12px;">Usado nos cálculos de autonomia, viagem, tanque e quanto pôr. Use o modo “Consumo real” para medir o seu.</p>
+            <div class="row">
+                <div class="field">
+                    <label for="factorCity">Cidade (km/L)</label>
+                    <input type="text" id="factorCity" data-key="fuel_factor_city" inputmode="decimal" placeholder="9,5">
+                </div>
+                <div class="field">
+                    <label for="factorRoad">Estrada (km/L)</label>
+                    <input type="text" id="factorRoad" data-key="fuel_factor_road" inputmode="decimal" placeholder="13">
+                </div>
+            </div>
+            <button type="button" class="secondary" id="resetFactors">Restaurar padrão</button>
+        </details>
+
+        <details id="historyPanel">
+            <summary>Histórico (<span id="historyCount">0</span>)</summary>
+            <ul class="history" id="historyList"></ul>
+            <p class="muted" id="historyEmpty">Nenhum cálculo salvo ainda.</p>
+            <button type="button" class="secondary" id="clearHistory">Limpar histórico</button>
+        </details>
+    </main>
+
+    <div class="toast" id="toast" role="status"></div>
 
     <script>
-        document.getElementById('calculateButton').addEventListener('click', function() {
-            const price = parseFloat(document.getElementById('price').value);
-            const value = parseFloat(document.getElementById('value').value);
-            const resultField = document.getElementById('result');
+        const DEFAULT_FACTORS = { city: 9.5, road: 13 };
+        const DEFAULT_ETHANOL_THRESHOLD = 70;
+        const HISTORY_KEY = 'fuel_history';
+        const MODE_KEY = 'fuel_mode';
+        const HISTORY_LIMIT = 20;
 
-            if (!isNaN(price) && price !== 0 && !isNaN(value)) {
-                const result = value / price * 9.5;
-                resultField.value = result.toFixed(2);
+        const USAGE_OPTIONS = [
+            { value: 'city', label: 'Cidade' },
+            { value: 'road', label: 'Estrada' },
+            { value: 'mixed', label: 'Misto (50/50)' }
+        ];
+
+        const MODE_LABELS = {
+            range: 'Autonomia',
+            trip: 'Viagem',
+            tank: 'Encher tanque',
+            compare: 'Álcool x Gasolina',
+            efficiency: 'Consumo real',
+            budget: 'Quanto pôr'
+        };
+
+        // ---------- Armazenamento seguro ----------
+        // Se o localStorage estiver indisponível (aba anônima, bloqueio), usa memória.
+        const memoryStore = new Map();
+        const storage = {
+            get(key) {
+                try { return localStorage.getItem(key); } catch (e) {
+                    return memoryStore.has(key) ? memoryStore.get(key) : null;
+                }
+            },
+            set(key, value) {
+                try { localStorage.setItem(key, value); } catch (e) { memoryStore.set(key, value); }
+            },
+            remove(key) {
+                try { localStorage.removeItem(key); } catch (e) { memoryStore.delete(key); }
+            }
+        };
+
+        // ---------- Números ----------
+        // Aceita "5,89", "5.89", "1.234,56", "R$ 100" etc.
+        function parseNumber(text) {
+            if (text === null || text === undefined) return NaN;
+            let s = String(text).replace(/[R$\s]/g, '');
+            if (s === '') return NaN;
+            if (s.includes(',') && s.includes('.')) {
+                s = s.replace(/\./g, '').replace(',', '.');
             } else {
-                resultField.value = 'Erro';
+                s = s.replace(',', '.');
+            }
+            if (!/^-?\d*\.?\d+$/.test(s) && !/^-?\d+\.?$/.test(s)) return NaN;
+            return parseFloat(s);
+        }
+
+        const currencyFormat = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
+        const money = n => currencyFormat.format(n);
+        const num = (n, digits = 1) => n.toLocaleString('pt-BR', {
+            minimumFractionDigits: digits,
+            maximumFractionDigits: digits
+        });
+
+        const $ = id => document.getElementById(id);
+
+        function valueOf(id) {
+            return parseNumber($(id).value);
+        }
+
+        function getFactor(usage) {
+            const city = valueOf('factorCity') > 0 ? valueOf('factorCity') : DEFAULT_FACTORS.city;
+            const road = valueOf('factorRoad') > 0 ? valueOf('factorRoad') : DEFAULT_FACTORS.road;
+            if (usage === 'road') return road;
+            if (usage === 'mixed') return (city + road) / 2;
+            return city;
+        }
+
+        function usageLabel(usage) {
+            const option = USAGE_OPTIONS.find(o => o.value === usage);
+            return option ? option.label.toLowerCase() : '';
+        }
+
+        // ---------- Cálculos por modo ----------
+        // Cada função devolve null (campos incompletos), { error } ou
+        // { lines: [[rótulo, valor, principal?]], verdict?, summary }.
+        const calculators = {
+            range() {
+                const price = valueOf('rangePrice');
+                const value = valueOf('rangeValue');
+                const usage = $('rangeUsage').value;
+                if (isNaN(price) || isNaN(value)) return null;
+                if (price <= 0 || value <= 0) return { error: 'Preço e valor devem ser maiores que zero.' };
+                const factor = getFactor(usage);
+                const liters = value / price;
+                const km = liters * factor;
+                return {
+                    lines: [
+                        ['Autonomia', `${num(km)} km`, true],
+                        ['Litros', `${num(liters, 2)} L`],
+                        ['Consumo usado', `${num(factor)} km/L (${usageLabel(usage)})`],
+                        ['Custo por km', money(price / factor)]
+                    ],
+                    summary: `${money(value)} a ${money(price)}/L → ${num(liters, 2)} L, ${num(km)} km (${usageLabel(usage)})`
+                };
+            },
+
+            trip() {
+                const distance = valueOf('tripDistance');
+                const price = valueOf('tripPrice');
+                const usage = $('tripUsage').value;
+                const peopleRaw = valueOf('tripPeople');
+                const tollsRaw = valueOf('tripTolls');
+                if (isNaN(distance) || isNaN(price)) return null;
+                if (distance <= 0 || price <= 0) return { error: 'Distância e preço devem ser maiores que zero.' };
+                const people = peopleRaw >= 1 ? Math.floor(peopleRaw) : 1;
+                const tolls = tollsRaw > 0 ? tollsRaw : 0;
+                const roundTrip = $('tripRoundTrip').checked;
+                const totalKm = distance * (roundTrip ? 2 : 1);
+                const tollsTotal = tolls * (roundTrip ? 2 : 1);
+                const factor = getFactor(usage);
+                const liters = totalKm / factor;
+                const fuelCost = liters * price;
+                const total = fuelCost + tollsTotal;
+                const lines = [
+                    ['Custo total', money(total), true],
+                    ['Distância total', `${num(totalKm, 0)} km`],
+                    ['Litros', `${num(liters, 2)} L`],
+                    ['Combustível', money(fuelCost)]
+                ];
+                if (tollsTotal > 0) lines.push(['Pedágios', money(tollsTotal)]);
+                if (people > 1) lines.push([`Por pessoa (${people})`, money(total / people)]);
+                return {
+                    lines,
+                    summary: `${num(totalKm, 0)} km${roundTrip ? ' (ida e volta)' : ''} → ${money(total)}` +
+                        (people > 1 ? `, ${money(total / people)} por pessoa` : '')
+                };
+            },
+
+            tank() {
+                const capacity = valueOf('tankCapacity');
+                const price = valueOf('tankPrice');
+                const level = Number($('tankLevel').value) / 100;
+                const usage = $('tankUsage').value;
+                if (isNaN(capacity) || isNaN(price)) return null;
+                if (capacity <= 0 || price <= 0) return { error: 'Capacidade e preço devem ser maiores que zero.' };
+                const factor = getFactor(usage);
+                const missing = capacity * (1 - level);
+                const cost = missing * price;
+                return {
+                    lines: [
+                        ['Para encher', money(cost), true],
+                        ['Litros faltando', `${num(missing, 1)} L`],
+                        ['Autonomia atual', `${num(capacity * level * factor, 0)} km`],
+                        ['Autonomia com tanque cheio', `${num(capacity * factor, 0)} km`]
+                    ],
+                    summary: `Tanque ${num(capacity, 0)} L a ${Math.round(level * 100)}% → ${num(missing, 1)} L, ${money(cost)}`
+                };
+            },
+
+            compare() {
+                const ethanol = valueOf('compareEthanol');
+                const gasoline = valueOf('compareGasoline');
+                const thresholdRaw = valueOf('compareThreshold');
+                if (isNaN(ethanol) || isNaN(gasoline)) return null;
+                if (ethanol <= 0 || gasoline <= 0) return { error: 'Os preços devem ser maiores que zero.' };
+                const threshold = thresholdRaw > 0 && thresholdRaw <= 100 ? thresholdRaw : DEFAULT_ETHANOL_THRESHOLD;
+                const ratio = ethanol / gasoline * 100;
+                const ethanolWins = ratio < threshold;
+                const breakEven = gasoline * threshold / 100;
+                const choice = ethanolWins ? 'Etanol' : 'Gasolina';
+                return {
+                    verdict: { text: `${choice} compensa mais`, kind: ethanolWins ? 'good' : 'warn' },
+                    lines: [
+                        ['Relação etanol/gasolina', `${num(ratio)}%`, true],
+                        ['Limite considerado', `${num(threshold, 0)}%`],
+                        ['Etanol compensa abaixo de', money(breakEven)],
+                        ['Economia estimada', `${num(Math.abs(threshold - ratio) / threshold * 100)}%`]
+                    ],
+                    summary: `Etanol ${money(ethanol)} x Gasolina ${money(gasoline)} → ${num(ratio)}%: ${choice}`
+                };
+            },
+
+            efficiency() {
+                const distance = valueOf('effDistance');
+                const liters = valueOf('effLiters');
+                const price = valueOf('effPrice');
+                if (isNaN(distance) || isNaN(liters)) return null;
+                if (distance <= 0 || liters <= 0) return { error: 'Km rodados e litros devem ser maiores que zero.' };
+                const kmPerLiter = distance / liters;
+                const lines = [
+                    ['Consumo', `${num(kmPerLiter, 2)} km/L`, true],
+                    ['Litros por 100 km', `${num(100 / kmPerLiter, 2)} L`]
+                ];
+                if (price > 0) {
+                    lines.push(['Custo por km', money(price / kmPerLiter)]);
+                    lines.push(['Custo do trecho', money(liters * price)]);
+                }
+                return {
+                    lines,
+                    kmPerLiter,
+                    summary: `${num(distance, 0)} km com ${num(liters, 2)} L → ${num(kmPerLiter, 2)} km/L`
+                };
+            },
+
+            budget() {
+                const distance = valueOf('budgetDistance');
+                const price = valueOf('budgetPrice');
+                const currentRaw = valueOf('budgetCurrent');
+                const usage = $('budgetUsage').value;
+                if (isNaN(distance) || isNaN(price)) return null;
+                if (distance <= 0 || price <= 0) return { error: 'Distância e preço devem ser maiores que zero.' };
+                const current = currentRaw > 0 ? currentRaw : 0;
+                const factor = getFactor(usage);
+                const needed = distance / factor;
+                const toBuy = Math.max(0, needed - current);
+                const cost = toBuy * price;
+                if (toBuy === 0) {
+                    return {
+                        verdict: { text: 'Não precisa abastecer', kind: 'good' },
+                        lines: [
+                            ['Litros necessários', `${num(needed, 2)} L`, true],
+                            ['Sobra estimada', `${num((current - needed) * factor, 0)} km`]
+                        ],
+                        summary: `${num(distance, 0)} km com ${num(current, 1)} L no tanque → não precisa abastecer`
+                    };
+                }
+                return {
+                    lines: [
+                        ['Abastecer', money(cost), true],
+                        ['Litros a colocar', `${num(toBuy, 2)} L`],
+                        ['Litros necessários no total', `${num(needed, 2)} L`],
+                        ['Valor arredondado', money(Math.ceil(cost / 10) * 10)]
+                    ],
+                    summary: `Rodar ${num(distance, 0)} km (${usageLabel(usage)}) → ${num(toBuy, 2)} L, ${money(cost)}`
+                };
+            }
+        };
+
+        // ---------- Estado / UI ----------
+        let currentMode = 'range';
+        let lastResult = null;
+
+        const resultBox = $('result');
+        const saveButton = $('saveButton');
+        const copyButton = $('copyButton');
+        const extraActions = $('extraActions');
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function render() {
+            const result = calculators[currentMode]();
+            lastResult = result && !result.error ? result : null;
+
+            saveButton.disabled = !lastResult;
+            copyButton.disabled = !lastResult;
+            extraActions.hidden = !(lastResult && currentMode === 'efficiency');
+
+            if (!result) {
+                resultBox.className = 'result empty';
+                resultBox.textContent = 'Preencha os campos para ver o resultado.';
+                return;
+            }
+            if (result.error) {
+                resultBox.className = 'result error';
+                resultBox.textContent = result.error;
+                return;
+            }
+
+            resultBox.className = 'result';
+            let html = '';
+            if (result.verdict) {
+                html += `<div class="verdict ${result.verdict.kind}">${escapeHtml(result.verdict.text)}</div>`;
+            }
+            html += result.lines.map(([label, value, main]) =>
+                `<div class="result-line${main ? ' main' : ''}"><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong></div>`
+            ).join('');
+            resultBox.innerHTML = html;
+        }
+
+        function setMode(mode) {
+            if (!calculators[mode]) mode = 'range';
+            currentMode = mode;
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.setAttribute('aria-selected', String(tab.dataset.mode === mode));
+            });
+            document.querySelectorAll('.mode').forEach(section => {
+                section.hidden = section.dataset.mode !== mode;
+            });
+            storage.set(MODE_KEY, mode);
+            render();
+        }
+
+        function showToast(message) {
+            const toast = $('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            clearTimeout(showToast.timer);
+            showToast.timer = setTimeout(() => toast.classList.remove('show'), 1800);
+        }
+
+        // ---------- Persistência de campos ----------
+        // Campos com o mesmo data-key (ex.: preço por litro) ficam sincronizados entre os modos.
+        function fieldsByKey(key) {
+            return document.querySelectorAll(`[data-key="${key}"]`);
+        }
+
+        function readField(el) {
+            return el.type === 'checkbox' ? String(el.checked) : el.value;
+        }
+
+        function writeField(el, value) {
+            if (el.type === 'checkbox') {
+                el.checked = value === 'true';
+            } else if (el.tagName === 'SELECT') {
+                if ([...el.options].some(o => o.value === value)) el.value = value;
+            } else {
+                el.value = value;
+            }
+        }
+
+        function validate(el) {
+            if (el.type !== 'text') return;
+            const invalid = el.value.trim() !== '' && isNaN(parseNumber(el.value));
+            el.classList.toggle('invalid', invalid);
+        }
+
+        function onFieldChange(event) {
+            const el = event.target;
+            const key = el.dataset.key;
+            if (!key) return;
+            const value = readField(el);
+            storage.set(key, value);
+            fieldsByKey(key).forEach(other => {
+                if (other !== el) writeField(other, value);
+            });
+            validate(el);
+            if (el.id === 'tankLevel') updateTankLabel();
+            render();
+        }
+
+        function restoreFields() {
+            document.querySelectorAll('[data-key]').forEach(el => {
+                const saved = storage.get(el.dataset.key);
+                if (saved !== null) writeField(el, saved);
+                validate(el);
+            });
+            updateTankLabel();
+        }
+
+        function updateTankLabel() {
+            $('tankLevelLabel').textContent = `${$('tankLevel').value}%`;
+        }
+
+        // ---------- Histórico ----------
+        function loadHistory() {
+            try {
+                const parsed = JSON.parse(storage.get(HISTORY_KEY) || '[]');
+                return Array.isArray(parsed) ? parsed : [];
+            } catch (e) {
+                return [];
+            }
+        }
+
+        function renderHistory() {
+            const history = loadHistory();
+            const list = $('historyList');
+            list.innerHTML = history.map(item => {
+                const date = new Date(item.date).toLocaleString('pt-BR', {
+                    day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit'
+                });
+                return `<li><span class="meta">${escapeHtml(MODE_LABELS[item.mode] || '')} · ${escapeHtml(date)}</span>${escapeHtml(item.summary)}</li>`;
+            }).join('');
+            $('historyCount').textContent = history.length;
+            $('historyEmpty').hidden = history.length > 0;
+            $('clearHistory').hidden = history.length === 0;
+        }
+
+        function saveToHistory() {
+            if (!lastResult) return;
+            const history = loadHistory();
+            history.unshift({ mode: currentMode, summary: lastResult.summary, date: Date.now() });
+            storage.set(HISTORY_KEY, JSON.stringify(history.slice(0, HISTORY_LIMIT)));
+            renderHistory();
+            showToast('Salvo no histórico');
+        }
+
+        // ---------- Inicialização ----------
+        document.querySelectorAll('.usage-select').forEach(select => {
+            select.innerHTML = USAGE_OPTIONS
+                .map(o => `<option value="${o.value}">${o.label}</option>`)
+                .join('');
+        });
+
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => setMode(tab.dataset.mode));
+        });
+
+        document.addEventListener('input', onFieldChange);
+        document.addEventListener('change', onFieldChange);
+
+        document.addEventListener('keydown', event => {
+            if (event.key === 'Enter' && event.target.matches('input[type="text"]')) {
+                saveToHistory();
             }
         });
+
+        saveButton.addEventListener('click', saveToHistory);
+
+        copyButton.addEventListener('click', async () => {
+            if (!lastResult) return;
+            const text = `${MODE_LABELS[currentMode]}: ${lastResult.summary}`;
+            try {
+                await navigator.clipboard.writeText(text);
+                showToast('Resultado copiado');
+            } catch (e) {
+                showToast('Não foi possível copiar');
+            }
+        });
+
+        extraActions.addEventListener('click', event => {
+            const target = event.target.closest('[data-apply]');
+            if (!target || !lastResult || !lastResult.kmPerLiter) return;
+            const field = target.dataset.apply === 'city' ? $('factorCity') : $('factorRoad');
+            field.value = num(lastResult.kmPerLiter, 2);
+            storage.set(field.dataset.key, field.value);
+            showToast(`Consumo na ${target.dataset.apply === 'city' ? 'cidade' : 'estrada'} atualizado`);
+        });
+
+        $('resetFactors').addEventListener('click', () => {
+            ['factorCity', 'factorRoad'].forEach(id => {
+                $(id).value = '';
+                storage.remove($(id).dataset.key);
+                validate($(id));
+            });
+            render();
+            showToast('Consumo padrão restaurado');
+        });
+
+        $('clearHistory').addEventListener('click', () => {
+            if (!confirm('Apagar todo o histórico?')) return;
+            storage.remove(HISTORY_KEY);
+            renderHistory();
+        });
+
+        restoreFields();
+        renderHistory();
+        setMode(storage.get(MODE_KEY) || 'range');
     </script>
 </body>
 </html>
