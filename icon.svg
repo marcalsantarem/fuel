@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#1e293b" />
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3b82f6" />
+      <stop offset="100%" stop-color="#2563eb" />
+    </linearGradient>
+    <linearGradient id="meterBg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0b1222" />
+      <stop offset="100%" stop-color="#020617" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background rounded rect -->
+  <rect width="512" height="512" rx="112" fill="url(#bg)" />
+
+  <!-- Outer subtle border -->
+  <rect x="1" y="1" width="510" height="510" rx="111" fill="none" stroke="#334155" stroke-width="2" opacity="0.6" />
+
+  <!-- Fuel Pump Body -->
+  <rect x="110" y="120" width="190" height="272" rx="28" fill="url(#accent)" />
+
+  <!-- Meter display screen -->
+  <rect x="140" y="160" width="130" height="84" rx="12" fill="url(#meterBg)" />
+  <line x1="160" y1="188" x2="230" y2="188" stroke="#38bdf8" stroke-width="6" stroke-linecap="round" />
+  <line x1="160" y1="212" x2="250" y2="212" stroke="#4ade80" stroke-width="6" stroke-linecap="round" />
+
+  <!-- Base / Platform -->
+  <rect x="90" y="380" width="230" height="24" rx="8" fill="#475569" />
+
+  <!-- Fuel hose and nozzle -->
+  <path d="M 300 210 C 370 210, 385 270, 385 320 C 385 365, 365 385, 345 385" 
+        fill="none" stroke="#94a3b8" stroke-width="18" stroke-linecap="round" />
+  
+  <!-- Nozzle holster / top connector -->
+  <rect x="370" y="170" width="24" height="60" rx="6" fill="#cbd5e1" transform="rotate(15 382 200)" />
+  <path d="M 380 172 L 350 145 L 340 155 L 372 182 Z" fill="#cbd5e1" />
+  <path d="M 350 145 L 340 135" stroke="#94a3b8" stroke-width="6" stroke-linecap="round" />
+
+  <!-- Fuel droplet badge in lower right -->
+  <circle cx="380" cy="370" r="52" fill="#0f172a" stroke="#2563eb" stroke-width="4" />
+  <path d="M 380 338 C 380 338, 356 370, 356 384 C 356 397, 367 408, 380 408 C 393 408, 404 397, 404 384 C 404 370, 380 338, 380 338 Z" fill="#38bdf8" />
+</svg>
